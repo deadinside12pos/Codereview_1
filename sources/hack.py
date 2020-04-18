@@ -28,4 +28,5 @@ class CaesarHacker:
  
         self.trainer.clear()
         return CaesarEncoderAndDecoder(shift_result).decode(text)
+  
 
