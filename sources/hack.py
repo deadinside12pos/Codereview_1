@@ -30,7 +30,7 @@ class CaesarHacker:
             next_model = deepcopy(now_model)
             for letter_id in range(alphabet_size):
                 next_model[alphabet[letter_id]] = now_model[
-                    string.alphabet[(letter_id + 1) % alphabet_size]]
+                    alphabet[(letter_id + 1) % alphabet_size]]
  
             now_model = next_model
  
