@@ -1,29 +1,44 @@
+from string import ascii_lowercase
+ 
+alphabet = ascii_lowercase
+alphabet_size = len(alphabet)
+alphabet_upper = alphabet.upper()
+ 
+ 
 class CaesarEncoderAndDecoder:
     def __init__(self, shift):
-        self.shift = int(shift) % 26
+        self.shift = int(shift) % alphabet_size
  
     def encode(self, text: str):
         ans = ""
         for char in text:
-            new_ord = ord(char)
+            new = char
             if char.isalpha():
                 if char.isupper():
-                    new_ord = ord('A') + (ord(char) - ord('A') + self.shift) % 26
+                    new_ord = alphabet_upper.find(char)
+                    new_ord = (new_ord + self.shift) % alphabet_size
+                    new = alphabet_upper[new_ord]
                 elif char.islower():
-                    new_ord = ord('a') + (ord(char) - ord('a') + self.shift) % 26
-            ans += chr(new_ord)
+                    new_ord = alphabet.find(char)
+                    new_ord = (new_ord + self.shift) % alphabet_size
+                    new = alphabet[new_ord]
+            ans += new
         return ans
  
     def decode(self, text: str):
         ans = ""
         for char in text:
-            new_ord = ord(char)
+            new = char
             if char.isalpha():
                 if char.isupper():
-                    new_ord = ord('A') + (ord(char) - ord('A') + 26 - self.shift) % 26
+                    new_ord = alphabet_upper.find(char)
+                    new_ord = (new_ord - self.shift + alphabet_size) % alphabet_size
+                    new = alphabet_upper[new_ord]
                 elif char.islower():
-                    new_ord = ord('a') + (ord(char) - ord('a') + 26 - self.shift) % 26
-            ans += chr(new_ord)
+                    new_ord = alphabet.find(char)
+                    new_ord = (new_ord - self.shift + alphabet_size) % alphabet_size
+                    new = alphabet[new_ord]
+            ans += new
         return ans
  
  
@@ -39,9 +54,12 @@ class VigenereEncoderAndDecoder:
         position = 0
         for char in text:
             if char.isalpha():
-                start = ord('A') if char.isupper() else ord('a')
-                delta = ord(self.shift[position % len(self.shift)]) - ord('a')
-                result += chr(start + (ord(char) - start + delta) % 26)
+                if char.islower():
+                    delta = alphabet.find(self.shift[position % len(self.shift)])
+                    result += alphabet[(alphabet.find(char) + delta) % alphabet_size]
+                if char.isupper():
+                    delta = alphabet_upper.find(self.shift[position % len(self.shift)])
+                    result += alphabet_upper[(alphabet_upper.find(char) + delta) % alphabet_size]
                 position += 1
             else:
                 result += char
@@ -52,9 +70,12 @@ class VigenereEncoderAndDecoder:
         position = 0
         for char in text:
             if char.isalpha():
-                start = ord('A') if char.isupper() else ord('a')
-                delta = ord(self.shift[position % len(self.shift)]) - ord('a')
-                result += chr(start + (ord(char) - start - delta + 26) % 26)
+                if char.islower():
+                    delta = alphabet.find(self.shift[position % len(self.shift)])
+                    result += alphabet[(alphabet.find(char) - delta + alphabet_size) % alphabet_size]
+                if char.isupper():
+                    delta = alphabet_upper.find(self.shift[position % len(self.shift)])
+                    result += alphabet_upper[(alphabet_upper.find(char) - delta + alphabet_size) % alphabet_size]
                 position += 1
             else:
                 result += char
