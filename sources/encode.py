@@ -8,76 +8,74 @@ alphabet_upper = alphabet.upper()
 class CaesarEncoderAndDecoder:
     def __init__(self, shift):
         self.shift = int(shift) % alphabet_size
+
+    def getneword(self, ord, shift):
+        new_ord = (ord + shift) % alphabet_size
+        return new_ord
+
+    def code(self, char, shift):
+        new = char
+        if char.isalpha():
+            if char.isupper():
+                ord = alphabet_upper.find(char)
+                new_ord = self.getneword(ord, shift)
+                new = alphabet_upper[new_ord]
+            elif char.islower():
+                ord = alphabet.find(char)
+                new_ord = self.getneword(ord, shift)
+                new = alphabet[new_ord]
+        return new
  
     def encode(self, text: str):
-        ans = ""
+        ans = []
         for char in text:
-            new = char
-            if char.isalpha():
-                if char.isupper():
-                    new_ord = alphabet_upper.find(char)
-                    new_ord = (new_ord + self.shift) % alphabet_size
-                    new = alphabet_upper[new_ord]
-                elif char.islower():
-                    new_ord = alphabet.find(char)
-                    new_ord = (new_ord + self.shift) % alphabet_size
-                    new = alphabet[new_ord]
-            ans += new
-        return ans
+            new = self.code(char, self.shift)
+            ans.append(new)
+        return ''.join(ans)
  
     def decode(self, text: str):
-        ans = ""
+        ans = []
         for char in text:
-            new = char
-            if char.isalpha():
-                if char.isupper():
-                    new_ord = alphabet_upper.find(char)
-                    new_ord = (new_ord - self.shift + alphabet_size) % alphabet_size
-                    new = alphabet_upper[new_ord]
-                elif char.islower():
-                    new_ord = alphabet.find(char)
-                    new_ord = (new_ord - self.shift + alphabet_size) % alphabet_size
-                    new = alphabet[new_ord]
-            ans += new
-        return ans
+            new = self.code(char, alphabet_size - self.shift)
+            ans.append(new)
+        return ''.join(ans)
  
  
 class VigenereEncoderAndDecoder:
     def __init__(self, shift):
         shift = shift.lower()
         if not shift.isalpha():
-            raise Exception('Key must be a single word')
+            raise SyntaxError('Key must be a single word')
         self.shift = shift
- 
-    def encode(self, text: str):
-        result = ""
+
+    def codechar(self, char, position, alphabet, de):
+        delta = alphabet.find(self.shift[position % len(self.shift)])
+        if de:
+            delta = alphabet_size - delta
+        return alphabet[(alphabet.find(char) + delta) % alphabet_size]
+
+    def countchar(self, char, position, de):
+        if char.islower():
+            char = self.codechar(char, position, alphabet, de)
+        if char.isupper():
+            char = self.codechar(char, position, alphabet_upper, de)
+        return char
+
+    def code(self, text, de):
+        result = []
         position = 0
         for char in text:
             if char.isalpha():
-                if char.islower():
-                    delta = alphabet.find(self.shift[position % len(self.shift)])
-                    result += alphabet[(alphabet.find(char) + delta) % alphabet_size]
-                if char.isupper():
-                    delta = alphabet_upper.find(self.shift[position % len(self.shift)])
-                    result += alphabet_upper[(alphabet_upper.find(char) + delta) % alphabet_size]
+                char = self.countchar(char, position, de)
                 position += 1
-            else:
-                result += char
+            result.append(char)
         return result
+
+    def encode(self, text: str):
+        result = self.code(text, False)
+        return ''.join(result)
  
     def decode(self, text: str):
-        result = ""
-        position = 0
-        for char in text:
-            if char.isalpha():
-                if char.islower():
-                    delta = alphabet.find(self.shift[position % len(self.shift)])
-                    result += alphabet[(alphabet.find(char) - delta + alphabet_size) % alphabet_size]
-                if char.isupper():
-                    delta = alphabet_upper.find(self.shift[position % len(self.shift)])
-                    result += alphabet_upper[(alphabet_upper.find(char) - delta + alphabet_size) % alphabet_size]
-                position += 1
-            else:
-                result += char
-        return result
+        result = self.code(text, True)
+        return ''.join(result)
 

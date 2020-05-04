@@ -1,10 +1,6 @@
-import string
 from copy import deepcopy
 from sources.train import Trainer
-from sources.encode import CaesarEncoderAndDecoder
- 
-alphabet = string.ascii_lowercase
-alphabet_size = len(alphabet)
+from sources.encode import CaesarEncoderAndDecoder, alphabet, alphabet_size
  
  
 class CaesarHacker:

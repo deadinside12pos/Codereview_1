@@ -6,8 +6,8 @@ from sources.hack import CaesarHacker
 from sources.train import Trainer
 from sources.encode import CaesarEncoderAndDecoder, VigenereEncoderAndDecoder
  
- 
-def encode(args):
+
+def code(args, en):
     if args.cipher == 'caesar':
         encoder = CaesarEncoderAndDecoder(args.key)
     else:
@@ -17,24 +17,23 @@ def encode(args):
     else:
         text = sys.stdin.read()
     if args.output_file:
-        args.output_file.write(encoder.encode(text))
+        if en:
+            args.output_file.write(encoder.encode(text))
+        else:
+            args.output_file.write(encoder.decode(text))
     else:
-        sys.stdout.write(encoder.encode(text))
+        if en:
+            sys.stdout.write(encoder.encode(text))
+        else:
+            sys.stdout.write(encoder.decode(text))
+
+
+def encode(args):
+    code(args, True)
  
  
 def decode(args):
-    if args.cipher == 'caesar':
-        decoder = CaesarEncoderAndDecoder(args.key)
-    else:
-        decoder = VigenereEncoderAndDecoder(args.key)
-    if args.input_file:
-        text = args.input_file.read()
-    else:
-        text = sys.stdin.read()
-    if args.output_file:
-        args.output_file.write(decoder.decode(text))
-    else:
-        sys.stdout.write(decoder.decode(text))
+    code(args, False)
  
  
 def train(args):
@@ -51,7 +50,7 @@ def hack(args):
     try:
         model = json.load(args.model_file)
     except json.JSONDecodeError:
-        raise Exception('Model file is not correct')
+        raise SyntaxError('Model file is not correct')
     hacker = CaesarHacker(model)
     if args.input_file:
         text = args.input_file.read()
