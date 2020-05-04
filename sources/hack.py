@@ -29,7 +29,5 @@ class CaesarHacker:
                     alphabet[(letter_id + 1) % alphabet_size]]
  
             now_model = next_model
- 
-        self.trainer.clear()
- 
+  
         return CaesarEncoderAndDecoder(shift_result).decode(text)
