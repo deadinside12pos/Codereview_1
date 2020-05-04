@@ -14,10 +14,6 @@ class Trainer:
                 self.count[char] = self.count.get(char, 0) + 1
                 self.letter_count += 1
  
-    def clear(self):
-        self.count.clear()
-        self.letter_count = 0
- 
     def get_model(self):
         result = {}
         for letter in string.ascii_lowercase:
