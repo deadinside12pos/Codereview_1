@@ -1,4 +1,5 @@
 from copy import deepcopy
+from collections import defaultdict
 from sources.train import Trainer
 from sources.encode import CaesarEncoderAndDecoder, alphabet, alphabet_size
  
@@ -10,7 +11,7 @@ class CaesarHacker:
         self.trainer = Trainer()
  
     def hack(self, text: str):
-        difference = [0 for i in range(alphabet_size)]
+        difference = defaultdict(int)
         shift_result = 0
  
         self.trainer.feed(text)
@@ -29,5 +30,5 @@ class CaesarHacker:
                     alphabet[(letter_id + 1) % alphabet_size]]
  
             now_model = next_model
-  
+
         return CaesarEncoderAndDecoder(shift_result).decode(text)

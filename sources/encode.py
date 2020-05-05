@@ -1,6 +1,7 @@
 from string import ascii_lowercase
  
 alphabet = ascii_lowercase
+bitlength = 7
 alphabet_size = len(alphabet)
 alphabet_upper = alphabet.upper()
  
@@ -79,3 +80,20 @@ class VigenereEncoderAndDecoder:
         result = self.code(text, True)
         return ''.join(result)
 
+
+class VernamEncoderAndDecoder:
+    def __init__(self, key):
+        self.key = int(key)
+
+    def encode(self, text: str):
+        bintext = []
+        for char in text:
+            bintext.append(bin(ord(char))[2:])
+        return bin(int(''.join(bintext), 2) ^ self.key)[2:]
+
+    def decode(self, text: str):
+        bintext = bin(self.key ^ int(text, 2))[2:]
+        res = []
+        for char in range(0, len(bintext), bitlength):
+            res.append(chr(int(bintext[char: char + bitlength], 2)))
+        return ''.join(res)

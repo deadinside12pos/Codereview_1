@@ -1,24 +1,25 @@
 import json
 import string
- 
- 
+from collections import defaultdict
+
+
 class Trainer:
  
     def __init__(self):
-        self.count = {}
+        self.count = defaultdict(int)
         self.letter_count = 0
- 
+
     def feed(self, text: str):
         for char in text.lower():
             if char.isalpha():
-                self.count[char] = self.count.get(char, 0) + 1
+                self.count[char] += 1
                 self.letter_count += 1
  
     def get_model(self):
         result = {}
         for letter in string.ascii_lowercase:
-            result[letter] = self.count.get(letter, 0) / self.letter_count
- 
+            if self.letter_count != 0:
+                result[letter] = self.count.get(letter, 0) / self.letter_count
         return result
  
     def get_json_model(self):
