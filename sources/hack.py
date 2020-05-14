@@ -1,4 +1,3 @@
-from copy import deepcopy
 from collections import defaultdict
 from sources.train import Trainer
 from sources.encode import CaesarEncoderAndDecoder, alphabet, alphabet_size
@@ -15,20 +14,14 @@ class CaesarHacker:
         shift_result = 0
  
         self.trainer.feed(text)
-        now_model = self.trainer.get_model()
+        current_model = self.trainer.get_model()
  
         for shift in range(alphabet_size):
             for letter in alphabet:
-                difference[shift] += (self.model.get(letter, 0) - now_model.get(letter, 0)) ** 2
+                encrypted_letter = CaesarEncoderAndDecoder(0).getnewchar(letter, shift, alphabet)
+                difference[shift] += (self.model[letter] - current_model[encrypted_letter]) ** 2
  
             if difference[shift] < difference[shift_result]:
                 shift_result = shift
- 
-            next_model = deepcopy(now_model)
-            for letter_id in range(alphabet_size):
-                next_model[alphabet[letter_id]] = now_model[
-                    alphabet[(letter_id + 1) % alphabet_size]]
- 
-            now_model = next_model
 
-        return CaesarEncoderAndDecoder(shift_result).decode(text)
+        return CaesarEncoderAndDecoder(shift_result).encode(text, True)

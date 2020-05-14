@@ -1,7 +1,8 @@
 from string import ascii_lowercase
  
 alphabet = ascii_lowercase
-bitlength = 7
+ASCII_BIT_COUNT = 7
+BASE = 2
 alphabet_size = len(alphabet)
 alphabet_upper = alphabet.upper()
  
@@ -14,33 +15,24 @@ class CaesarEncoderAndDecoder:
         new_ord = (ord + shift) % alphabet_size
         return new_ord
 
-    def code(self, char, shift):
-        new = char
-        if char.isalpha():
-            if char.isupper():
-                ord = alphabet_upper.find(char)
-                new_ord = self.getneword(ord, shift)
-                new = alphabet_upper[new_ord]
-            elif char.islower():
-                ord = alphabet.find(char)
-                new_ord = self.getneword(ord, shift)
-                new = alphabet[new_ord]
-        return new
+    def getnewchar(self, char, shift, alphabet):
+        ord = alphabet.find(char)
+        new_ord = self.getneword(ord, shift)
+        return alphabet[new_ord]
  
-    def encode(self, text: str):
+    def encode(self, text: str, decrypt):
         ans = []
+        shift = self.shift * (-1 if decrypt else 1)
         for char in text:
-            new = self.code(char, self.shift)
+            new = char
+            if char.isalpha():
+                if char.isupper():
+                    new = self.getnewchar(char, shift, alphabet_upper)
+                elif char.islower():
+                    new = self.getnewchar(char, shift, alphabet)
             ans.append(new)
         return ''.join(ans)
- 
-    def decode(self, text: str):
-        ans = []
-        for char in text:
-            new = self.code(char, alphabet_size - self.shift)
-            ans.append(new)
-        return ''.join(ans)
- 
+
  
 class VigenereEncoderAndDecoder:
     def __init__(self, shift):
@@ -49,35 +41,31 @@ class VigenereEncoderAndDecoder:
             raise SyntaxError('Key must be a single word')
         self.shift = shift
 
-    def codechar(self, char, position, alphabet, de):
+    def codechar(self, char, position, alphabet, decrypt):
         delta = alphabet.find(self.shift[position % len(self.shift)])
-        if de:
+        if decrypt:
             delta = alphabet_size - delta
         return alphabet[(alphabet.find(char) + delta) % alphabet_size]
 
-    def countchar(self, char, position, de):
+    def countchar(self, char, position, decrypt):
         if char.islower():
-            char = self.codechar(char, position, alphabet, de)
+            char = self.codechar(char, position, alphabet, decrypt)
         if char.isupper():
-            char = self.codechar(char, position, alphabet_upper, de)
+            char = self.codechar(char, position, alphabet_upper, decrypt)
         return char
 
-    def code(self, text, de):
+    def code(self, text, decrypt):
         result = []
         position = 0
         for char in text:
             if char.isalpha():
-                char = self.countchar(char, position, de)
+                char = self.countchar(char, position, decrypt)
                 position += 1
             result.append(char)
         return result
 
-    def encode(self, text: str):
-        result = self.code(text, False)
-        return ''.join(result)
- 
-    def decode(self, text: str):
-        result = self.code(text, True)
+    def encode(self, text: str, decrypt):
+        result = self.code(text, decrypt)
         return ''.join(result)
 
 
@@ -85,15 +73,15 @@ class VernamEncoderAndDecoder:
     def __init__(self, key):
         self.key = int(key)
 
-    def encode(self, text: str):
-        bintext = []
-        for char in text:
-            bintext.append(bin(ord(char))[2:])
-        return bin(int(''.join(bintext), 2) ^ self.key)[2:]
-
-    def decode(self, text: str):
-        bintext = bin(self.key ^ int(text, 2))[2:]
-        res = []
-        for char in range(0, len(bintext), bitlength):
-            res.append(chr(int(bintext[char: char + bitlength], 2)))
-        return ''.join(res)
+    def encode(self, text: str, decrypt):
+        if decrypt:
+            bintext = bin(self.key ^ int(text, BASE))[BASE:]
+            res = []
+            for char in range(0, len(bintext), ASCII_BIT_COUNT):
+                res.append(chr(int(bintext[char: char + ASCII_BIT_COUNT], BASE)))
+            return ''.join(res)
+        else:
+            bintext = []
+            for char in text:
+                bintext.append(bin(ord(char))[BASE:])
+            return bin(int(''.join(bintext), BASE) ^ self.key)[BASE:]

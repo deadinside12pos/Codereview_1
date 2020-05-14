@@ -16,10 +16,10 @@ class Trainer:
                 self.letter_count += 1
  
     def get_model(self):
-        result = {}
+        result = defaultdict(float)
         for letter in string.ascii_lowercase:
             if self.letter_count != 0:
-                result[letter] = self.count.get(letter, 0) / self.letter_count
+                result[letter] = self.count[letter] / self.letter_count
         return result
  
     def get_json_model(self):
