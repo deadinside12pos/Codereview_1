@@ -60,7 +60,7 @@ if __name__ == '__main__':
     parser_decode.add_argument('--cipher', choices=['caesar', 'vigenere', 'vernam'], required=True)
     parser_decode.add_argument('--key', required=True)
     parser_decode.add_argument('--input-file', type=argparse.FileType('r'), default=sys.stdin)
-    parser_decode.add_argument('--output-file', type=argparse.FileType('w'),default=sys.stdout)
+    parser_decode.add_argument('--output-file', type=argparse.FileType('w'), default=sys.stdout)
     parser_decode.set_defaults(func=decode)
 
     # parser to train
